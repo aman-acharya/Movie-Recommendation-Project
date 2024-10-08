@@ -31,7 +31,7 @@ def recommend(movies, selected_movie, num_recommendations, similarity):
         return recommended_movie_names,recommended_movie_posters
 
     except Exception as e:
-        st.info(':warning: Error recommending movies. Please try again.')
+        st.info(f'An error occurred: {e}')
         return None, None
 
 def fetch_poster(movie_id):
@@ -45,15 +45,19 @@ def fetch_poster(movie_id):
         - full_path: str: full path of the movie poster
     '''
     try:
-        url = "https://api.themoviedb.org/3/movie/{}?api_key=2a44a8e55f6471cc065c7c32db1d5256&language=en-US".format(movie_id)
-        data = requests.get(url)
-        data = data.json()
-        poster_path = data['poster_path']
-        full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
-        return full_path
+        if movie_id:
+            url = "https://api.themoviedb.org/3/movie/{}?api_key=2a44a8e55f6471cc065c7c32db1d5256&language=en-US".format(movie_id)
+            data = requests.get(url)
+            data = data.json()
+            poster_path = data.get('poster_path')
+            if poster_path:
+                full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
+                return full_path
+        else:
+            return None
 
     except Exception as e:
-        st.info(':warning: Error fetching the movie poster for selected movie. Please try another movie.')
+        st.info(f'An error occurred: {e}')
         return None
 
 # read the data
@@ -72,7 +76,7 @@ def load_data():
         return movies, similarity   
     
     except Exception as e:
-        st.info(':warning: Error loading the data. Please try again.')
+        st.info(f'An error occurred: {e}')
         return None, None
     
 def main():
@@ -105,8 +109,9 @@ def main():
                                 st.write(" ")
 
     except Exception as e:
-        st.info(':warning: Error recommending movies. Please try again.')
-
+        st.info(f'An error occurred: {e}')
+        return None, None
+    
 if __name__ == "__main__":
     main()
 
